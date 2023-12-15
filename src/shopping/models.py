@@ -1,28 +1,12 @@
 from django.db import models
 
 
-class Category(models.Model):
-    parent = models.ForeignKey('self', related_name='children', on_delete=models.CASCADE, blank=True, null=True)
-    name = models.CharField(max_length=200, null=True, verbose_name='Название категории')
-
-    def __str__(self):
-        return self.name
-
-
 class Product(models.Model):
-    category = models.ForeignKey(Category, related_name='products', on_delete=models.CASCADE, verbose_name='Категория')
     name = models.CharField(max_length=200, verbose_name='Наименование товара')
     price = models.DecimalField(max_digits=6, decimal_places=2, verbose_name='Цена единицы товара')
     description = models.TextField(blank=True, verbose_name='Описание товара')
-    image = models.FileField(upload_to='items/', null=True, blank=True, verbose_name='Изображение товара')
+    image = models.FileField(upload_to='products/', null=True, blank=True, verbose_name='Изображение товара')
     quantity_in_stock = models.PositiveIntegerField(default=0, blank=True, verbose_name='Количество товара на складе')
-
-    def __str__(self):
-        return self.name
-
-
-class OrderStatus(models.Model):
-    name = models.CharField(max_length=200, null=True, verbose_name='Описание статуса заказа')
 
     def __str__(self):
         return self.name
