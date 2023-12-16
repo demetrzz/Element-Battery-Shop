@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
@@ -21,5 +22,4 @@ def delete_product(request, id):
 @require_http_methods(['POST'])
 def add_product_to_cart(request, id):
     OrderItem.objects.create(product_id=id, order_id=1)
-    products = Product.objects.all()
-    return render(request, 'products_list.html', {'products': products})
+    return HttpResponse("Success")
