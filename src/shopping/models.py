@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 
 
@@ -14,7 +15,8 @@ class Product(models.Model):
 
 class Order(models.Model):
     products = models.ManyToManyField(Product, through='OrderItem')
-    email = models.EmailField(verbose_name='Почта покупателя', blank=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
+    session_key = models.CharField(max_length=32, null=True, blank=True)
     items_cost = models.IntegerField(default=0, verbose_name='Стоимость товаров')
 
     CREATED = 'CREATED'

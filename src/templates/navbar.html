@@ -1,0 +1,12 @@
+{% if user.is_authenticated %}
+    <li class="last">
+        {{ user.username }} |
+        <form action="{% url 'logout' %}" method="post" style="display: inline;">
+            {% csrf_token %}
+            <button type="submit">Выйти</button>
+        </form>
+    </li>
+{% else %}
+    <li class="last"><a href="{% url 'login' %}">Войти</a></li> |
+    <li class="last"><a href="{% url 'register' %}">Регистрация</a></li>
+{% endif %}
