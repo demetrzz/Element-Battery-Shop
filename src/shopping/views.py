@@ -1,7 +1,8 @@
 import logging
 
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import HttpResponse
+from django.db.models import Sum, F
+from django.http import HttpResponse, Http404
 from django.shortcuts import render, get_object_or_404
 from django.template.response import TemplateResponse
 from django.views.decorators.http import require_http_methods
@@ -14,6 +15,23 @@ logger = logging.getLogger(__name__)
 def display_products(request):
     products = Product.objects.all()
     return render(request, 'display_products.html', {'products': products})
+
+
+def display_cart(request):
+    if request.user.is_authenticated:
+        order_id = get_object_or_404(Order, user=request.user).id
+        orderitems = OrderItem.objects.filter(order_id=order_id)
+    else:
+        order_key = request.session.session_key
+        if not order_key:
+            raise Http404
+        orderitems = OrderItem.objects.filter(session=order_key)
+    orderitems = (orderitems.values('product__name', 'product')
+                  .annotate(total_price=F('quantity') * F('product__price'))
+                  .values('product__name', 'product', 'total_price').annotate(total_quantity=Sum('quantity')))
+    total_order_price = sum([item['total_price'] for item in orderitems])
+    return render(request, 'cart.html',
+                  {'orderitems': orderitems, 'total_order_price': total_order_price})
 
 
 @require_http_methods(['DELETE'])
