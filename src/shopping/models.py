@@ -17,7 +17,6 @@ class Order(models.Model):
     products = models.ManyToManyField(Product, through='OrderItem')
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
     session_key = models.CharField(max_length=32, null=True, blank=True)
-    items_cost = models.IntegerField(default=0, verbose_name='Стоимость товаров')
 
     CREATED = 'CREATED'
     WAITING_PAYMENT = 'WAITING_PAYMENT'
@@ -35,8 +34,17 @@ class Order(models.Model):
     ]
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=CREATED, verbose_name='Статус')
 
+    def get_total(self):
+        total = 0
+        for item in self.items.all():
+            total += item.get_cost()
+        return total
+
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, verbose_name='Заказ', related_name='items')
     product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Товар')
     quantity = models.PositiveIntegerField(default=1, verbose_name='Количество')
+
+    def get_cost(self):
+        return self.product.price * self.quantity
