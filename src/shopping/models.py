@@ -1,3 +1,4 @@
+import uuid as uuid_lib
 from django.conf import settings
 from django.db import models
 
@@ -14,20 +15,22 @@ class Product(models.Model):
 
 
 class Order(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid_lib.uuid4, editable=False, verbose_name='uuid заказа')
     products = models.ManyToManyField(Product, through='OrderItem')
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
-    session_key = models.CharField(max_length=32, null=True, blank=True)
+    session_key = models.CharField(max_length=32, null=True, blank=True,
+                                   verbose_name='Номер сессии неавторизованного клиента')
 
     CREATED = 'CREATED'
     WAITING_PAYMENT = 'WAITING_PAYMENT'
-    PAYED = 'PAYED'
+    PAID = 'PAID'
     DELIVERY = 'DELIVERY'
     COMPLETED = 'COMPLETED'
     CANCELED = 'CANCELED'
     STATUS_CHOICES = [
         (CREATED, 'Создан'),
         (WAITING_PAYMENT, 'Ожидает оплаты'),
-        (PAYED, 'Оплачен'),
+        (PAID, 'Оплачен'),
         (DELIVERY, 'В процессе доставки'),
         (COMPLETED, 'Выполнен'),
         (CANCELED, 'Отменен')

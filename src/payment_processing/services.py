@@ -11,7 +11,7 @@ def create_payment(order):
     idempotence_key = str(uuid.uuid4())
     yoo_payment = YooPayment.create({
         "amount": {
-            "value": "100.00",
+            "value": str(order.get_total()),
             "currency": "RUB"
         },
         "confirmation": {
@@ -19,7 +19,7 @@ def create_payment(order):
             "return_url": "https://www.example.com/return_url"
         },
         "capture": True,
-        "description": "Заказ №1"
+        "description": f'Платеж по заказу номер {order.uuid}'
     }, idempotence_key)
     payment = Payment.objects.create(
         order=order,
