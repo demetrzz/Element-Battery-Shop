@@ -7,6 +7,7 @@ from payment_processing.models import Payment
 
 
 def create_payment(order):
+    """ Main logic for creating payment object using YOOKASSA LIB """
     Configuration.configure(os.environ.get('KASSA_ACC_ID'), os.environ.get('KASSA_SECRET_KEY'))
     idempotence_key = str(uuid.uuid4())
     yoo_payment = YooPayment.create({

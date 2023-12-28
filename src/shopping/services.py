@@ -7,6 +7,7 @@ from shopping.models import Product, Order, OrderItem
 
 
 def add_to_cart(request, product_id, quantity):
+    """ Main logic of adding product to cart """
     try:
         product = get_object_or_404(Product, id=product_id)
         if request.user.is_authenticated:
@@ -27,6 +28,7 @@ def add_to_cart(request, product_id, quantity):
 
 
 def get_order(request):
+    """ Getting an order object from database for either authorized user or using session-based user """
     if request.user.is_authenticated:
         order = get_object_or_404(Order, user=request.user)
     else:

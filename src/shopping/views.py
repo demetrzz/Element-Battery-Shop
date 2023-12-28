@@ -12,11 +12,13 @@ logger = logging.getLogger(__name__)
 
 
 def display_products(request):
+    """ This view displays full list of products """
     products = Product.objects.all()
     return render(request, 'display_products.html', {'products': products})
 
 
 def display_cart(request):
+    """ This view displays all the products that user have in their shopping cart"""
     order = get_order(request)
     orderitems = order.items.all().values('product__name', 'product__price', 'quantity')
     total_order_price = order.get_total()
@@ -26,6 +28,7 @@ def display_cart(request):
 
 @require_http_methods(['POST'])
 def add_product_to_cart(request, id):
+    """ This view handles logic of 'add product to cart' button logic """
     logger.info('posting product to order')
     quantity = request.POST.get('quantity', 1)
     try:
