@@ -11,6 +11,10 @@
     </div>
   {% endfor %}
   <p>Total Order Price: {{ total_order_price }}</p>
+  <form action="{% url 'pay_for_order' %}" method="post" style="display: inline;">
+      {% csrf_token %}
+      <button type="submit">Оплатить</button>
+  </form>
 </div>
 
 {% endblock %}

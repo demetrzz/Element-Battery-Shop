@@ -28,7 +28,7 @@ def display_cart(request):
 
 @require_http_methods(['POST'])
 def add_product_to_cart(request, id):
-    """ This view handles logic of 'add product to cart' button logic """
+    """ This view handles logic of 'add product to cart' button """
     logger.info('posting product to order')
     quantity = request.POST.get('quantity', 1)
     try:
