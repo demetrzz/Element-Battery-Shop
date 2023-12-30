@@ -32,10 +32,10 @@ def create_payment(request):
     payment, created = Payment.objects.get_or_create(
         order=order,
         defaults={
-        "yoo_id": yoo_payment.id,
-        "status": yoo_payment.status,
-        "amount": yoo_payment.amount.value,
-        "currency": yoo_payment.amount.currency,
-        "confirmation_url": yoo_payment.confirmation.confirmation_url}
+            "yoo_id": yoo_payment.id,
+            "status": yoo_payment.status,
+            "amount": yoo_payment.amount.value,
+            "currency": yoo_payment.amount.currency,
+            "confirmation_url": yoo_payment.confirmation.confirmation_url}
     )
     return payment

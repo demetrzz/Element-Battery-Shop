@@ -18,9 +18,20 @@ def add_to_cart(request, product_id, quantity):
                 request.session.create()
                 order_key = request.session.session_key
             order, created = Order.objects.get_or_create(session_key=order_key)
-
-        OrderItem.objects.create(product=product, order=order, quantity=quantity)
-        messages.success(request, 'Product added to cart successfully.')
+        # if orderitem exists, only update quantity
+        orderitem, created = OrderItem.objects.get_or_create(
+            product=product,
+            order=order,
+            defaults={
+                "product": product,
+                "order": order,
+                "quantity": quantity
+            }
+        )
+        if not created:
+            orderitem.quantity += quantity
+            orderitem.save()
+        #messages.success(request, 'Product added to cart successfully.')
     except ValueError:
         messages.error(request, 'Invalid quantity.')
     except ObjectDoesNotExist:

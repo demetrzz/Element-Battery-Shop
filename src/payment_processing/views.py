@@ -12,4 +12,3 @@ def pay_for_order(request):
     except Http404:
         raise
     return redirect(str(payment.confirmation_url))
-
