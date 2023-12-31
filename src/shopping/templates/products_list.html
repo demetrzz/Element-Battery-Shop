@@ -7,7 +7,11 @@
       <a class="product-image block mr-2 hover:text-gray-600">
         <img src="{{ product.image.url }}">
       </a>
-<form class="add-to-cart-form" hx-post="{% url 'add_product_to_cart' product.id %}" hx-trigger="submit">
+<form class="add-to-cart-form"
+      hx-post="{% url 'add_product_to_cart' product.id %}"
+      hx-trigger="submit"
+      hx-target="#products"
+      hx-swap="innerHTML">
   {% csrf_token %}
   <input type="number" class="quantity-input" name="quantity" min="1" value="1">
   <button type="submit" class="add-to-cart-button">Add to cart</button>

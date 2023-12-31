@@ -1,6 +1,7 @@
 import uuid as uuid_lib
 from django.conf import settings
 from django.db import models
+from django.db.models import Sum, F
 
 
 class Product(models.Model):
@@ -38,10 +39,7 @@ class Order(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=CREATED, verbose_name='Статус')
 
     def get_total(self):
-        total = 0
-        for item in self.items.all():
-            total += item.get_cost()
-        return total
+        return self.items.aggregate(total=Sum(F('product__price') * F('quantity')))['total'] or 0
 
 
 class OrderItem(models.Model):
