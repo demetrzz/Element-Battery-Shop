@@ -1,7 +1,6 @@
 import logging
 
 from django.contrib import messages
-from django.db import transaction
 from django.db.models import F
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
@@ -29,33 +28,32 @@ def add_to_cart(request, product_id, quantity):
     """ Main logic of adding product to cart """
     logger.info('inside add_to_cart service')
     try:
-        with transaction.atomic():
-            # Get or create order
-            if request.user.is_authenticated:
-                order, created = Order.objects.get_or_create(user=request.user)
-            else:
+        # Get or create order
+        if request.user.is_authenticated:
+            order, created = Order.objects.get_or_create(user=request.user)
+        else:
+            order_key = request.session.session_key
+            if not order_key:
+                request.session.create()
                 order_key = request.session.session_key
-                if not order_key:
-                    request.session.create()
-                    order_key = request.session.session_key
-                order, created = Order.objects.get_or_create(session_key=order_key)
+            order, created = Order.objects.get_or_create(session_key=order_key)
 
-            # Get or create order item
-            product = Product.objects.select_for_update().get(id=product_id)
-            orderitem, created = OrderItem.objects.select_for_update().get_or_create(
-                product=product,
-                order=order,
-            )
+        # Get or create order item
+        product = Product.objects.get(id=product_id)
+        orderitem, created = OrderItem.objects.get_or_create(
+            product=product,
+            order=order,
+        )
 
-            # Update quantity
-            if not created:
-                orderitem.quantity = F('quantity') + quantity
-                orderitem.save(update_fields=['quantity'])
-                orderitem.refresh_from_db()
+        # Update quantity
+        if not created:
+            orderitem.quantity = F('quantity') + quantity
+            orderitem.save(update_fields=['quantity'])
+            orderitem.refresh_from_db()
 
-            # Delete order item if quantity is zero or less
-            if orderitem.quantity <= 0:
-                orderitem.delete()
+        # Delete order item if quantity is zero or less
+        if orderitem.quantity <= 0:
+            orderitem.delete()
 
     except (ValueError, Product.DoesNotExist) as e:
         messages.error(request, str(e))
