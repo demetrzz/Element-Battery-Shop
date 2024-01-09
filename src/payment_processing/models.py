@@ -4,7 +4,7 @@ from shopping.models import Order
 
 
 class Payment(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, verbose_name='Заказ')
+    order = models.ForeignKey(Order, on_delete=models.PROTECT, verbose_name='Заказ')
     yoo_id = models.CharField(max_length=200, null=True, verbose_name='ID в YooKassa')
 
     PENDING = 'pending'

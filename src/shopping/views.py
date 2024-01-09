@@ -1,11 +1,12 @@
 import logging
 
+from django.http import Http404
 from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
 
 from .models import Product, OrderItem
-from .services import get_order_details, process_cart
-
+from .services.cart_services import process_cart
+from .services.order_services import get_order_details
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +25,10 @@ def render_products_div(request):
 
 def display_cart(request):
     """ This view renders shopping cart """
-    orderitems, total_order_price = get_order_details(request)
+    try:
+        orderitems, total_order_price = get_order_details(request)
+    except Http404:
+        return render(request, 'empty_cart.html', {'message': 'Your cart is empty'})
     return render(request, 'cart_page.html',
                   {'orderitems': orderitems, 'total_order_price': total_order_price})
 

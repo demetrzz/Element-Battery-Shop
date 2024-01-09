@@ -14,7 +14,7 @@ SECRET_KEY = 'django-insecure-qym#=df1_7(zip-yc2)77$a7u*=a)ev%b%w$oomk#$!(#=(()7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -143,3 +143,5 @@ LOGGING = {
 INTERNAL_IPS = [
     '127.0.0.1',
 ]
+
+CSRF_TRUSTED_ORIGINS = [os.environ.get('TEST_URL'),]
