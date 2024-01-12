@@ -76,13 +76,14 @@ def handle_payment_status_change(data):
     # Start a transaction
     with transaction.atomic():
         # Get the Payment object with the given ID
-        payment = Payment.objects.select_for_update().get(yoo_id=payment_id)
+        try:
+            payment = Payment.objects.select_for_update().get(yoo_id=payment_id)
+        except Payment.DoesNotExist:
+            raise ValueError('Payment not found')
 
-        # Update the status of the Payment object
         payment.status = payment_status
         payment.save()
 
-        # Get the associated Order object
         order = payment.order
 
         # Update the status of the Order object based on the payment status
@@ -92,12 +93,12 @@ def handle_payment_status_change(data):
             # Decrement the quantity_in_stock of each Product in the Order
             for item in order.items.all():
                 product = item.product
+                if product.quantity_in_stock < item.quantity:
+                    raise ValueError('Insufficient stock for product')
                 product.quantity_in_stock -= item.quantity
                 product.save()
 
         elif payment_status == Payment.CANCELED:
             order.status = Order.CANCELED
-        # Add more conditions here if needed
 
-        # Save the changes to the Order object
         order.save()

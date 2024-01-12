@@ -1,11 +1,12 @@
+from django.db import transaction
 from django.db.models import F
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 
-from shopping.services.exceptions import NotEnoughInStock
 from shopping.models import Order, Product, OrderItem
 
 
+@transaction.atomic
 def get_or_create_order(request):
     """ Get or create order """
     if request.user.is_authenticated:
@@ -25,9 +26,13 @@ def get_or_create_order(request):
 
 def get_product(product_id):
     """ Get product """
-    return Product.objects.get(id=product_id)
+    try:
+        return Product.objects.get(id=product_id)
+    except Product.DoesNotExist:
+        raise Http404("Product does not exist")
 
 
+@transaction.atomic
 def get_or_create_orderitem(product, order, quantity):
     """ Get or create order item """
     orderitem, created = OrderItem.objects.get_or_create(
@@ -35,10 +40,11 @@ def get_or_create_orderitem(product, order, quantity):
         order=order,
     )
     if quantity + orderitem.quantity > product.quantity_in_stock:
-        raise NotEnoughInStock
+        raise ValueError("Not enough stock")
     return orderitem
 
 
+@transaction.atomic
 def update_orderitem_quantity(orderitem, quantity):
     """ Update quantity """
     orderitem.quantity = F('quantity') + quantity
@@ -56,7 +62,7 @@ def get_order_details(request):
     else:
         order_key = request.session.session_key
         if not order_key:
-            raise Http404
+            raise Http404("Order does not exist")
         order = get_object_or_404(Order.objects.filter(status=Order.CREATED), session_key=order_key)
 
     # Getting the order details
