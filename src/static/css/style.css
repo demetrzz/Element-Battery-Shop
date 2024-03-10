@@ -36,3 +36,29 @@ nav li a:hover {
 main {
     margin: 2em;
 }
+
+.product {
+  border: 1px solid #ddd;
+  margin-bottom: 10px;
+  padding: 10px;
+}
+
+.review-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: black;
+}
+
+.review-link:hover {
+    color: blue;
+}
+
+.star {
+    color: gold;
+}
+
+.rating, .review-count {
+    font-weight: bold;
+}

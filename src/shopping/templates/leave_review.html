@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div id="product">
+    <h2>{{ product.name }}</h2>
+    <img src="{{ product.image.url }}" width="250" height="250">
+</div>
+
+{% if existing_review %}
+    <div id="existing-review">
+        <h3>Your existing review:</h3>
+        <p>Rating: {{ existing_review.rating }}</p>
+        <p>{{ existing_review.text }}</p>
+    </div>
+{% endif %}
+
+<form id="review-form" method="post" action="{% url 'submit_review' product.id %}">
+    {% csrf_token %}
+    <label for="rating">Rating:</label>
+    <select id="rating" name="rating">
+        <option value="1" {% if existing_review and existing_review.rating == 1 %}selected{% endif %}>1</option>
+        <option value="2" {% if existing_review and existing_review.rating == 2 %}selected{% endif %}>2</option>
+        <option value="3" {% if existing_review and existing_review.rating == 3 %}selected{% endif %}>3</option>
+        <option value="4" {% if existing_review and existing_review.rating == 4 %}selected{% endif %}>4</option>
+        <option value="5" {% if existing_review and existing_review.rating == 5 %}selected{% endif %}>5</option>
+    </select>
+    <label for="text">Review:</label>
+    <textarea id="text" name="text">{% if existing_review %}{{ existing_review.text }}{% endif %}</textarea>
+    <button type="submit">Submit Review</button>
+</form>
+{% endblock %}

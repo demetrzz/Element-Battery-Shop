@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div id="product">
+    <h2>{{ product.name }}</h2>
+    <img src="{{ product.image.url }}" width="250" height="250">
+</div>
+
+<h3>Reviews:</h3>
+{% for review in reviews %}
+    <div class="review">
+        <h4>Review by {{ review.user.username }}</h4>
+        <p>Rating: {{ review.rating }}</p>
+        <p>{{ review.text }}</p>
+    </div>
+{% empty %}
+    <p>No reviews yet.</p>
+{% endfor %}
+
+<a href="{% url 'leave_review' product.id %}">Leave a review</a>
+{% endblock %}

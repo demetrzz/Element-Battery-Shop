@@ -5,17 +5,25 @@
       <span class="product-name">{{ product.name }}</span>
       <span class="product-price">{{ product.price }}</span>
       <a class="product-image block mr-2 hover:text-gray-600">
-        <img src="{{ product.image.url }}">
+        <img src="{{ product.image.url }}" width="250" height="250">
       </a>
-<form class="add-to-cart-form"
-      hx-post="{% url 'add_product_to_cart' product.id %}"
-      hx-trigger="submit"
-      hx-target="#products"
-      hx-swap="innerHTML">
-  {% csrf_token %}
-  <input type="number" class="quantity-input" name="quantity" min="1" value="1">
-  <button type="submit" class="add-to-cart-button">Add to cart</button>
-</form>
+      <div class="product-rating">
+        <a href="{% url 'product_reviews' product.id %}" class="review-link">
+            <span class="star">⭐</span>
+            <span class="rating">{{ product.average_rating }}</span>
+            <span class="review-count">{{ product.reviews.count }} Reviews</span>
+        </a>
+        <a href="{% url 'leave_review' product.id %}" class="leave-review-button">Leave a review</a>
+      </div>
+      <form class="add-to-cart-form"
+            hx-post="{% url 'add_product_to_cart' product.id %}"
+            hx-trigger="submit"
+            hx-target="#products"
+            hx-swap="innerHTML">
+        {% csrf_token %}
+        <input type="number" class="quantity-input" name="quantity" min="1" value="1">
+        <button type="submit" class="add-to-cart-button">Add to cart</button>
+      </form>
       <div id="message{{ forloop.counter }}"></div>
     </div>
   {% endfor %}

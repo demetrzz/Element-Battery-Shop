@@ -1,7 +1,7 @@
 import uuid as uuid_lib
 from django.conf import settings
 from django.db import models
-from django.db.models import Sum, F
+from django.db.models import Sum, F, Avg
 
 
 class Product(models.Model):
@@ -11,8 +11,20 @@ class Product(models.Model):
     image = models.FileField(upload_to='products/', null=True, blank=True, verbose_name='Изображение товара')
     quantity_in_stock = models.PositiveIntegerField(default=0, blank=True, verbose_name='Количество товара на складе')
 
+    @property
+    def average_rating(self):
+        return self.reviews.aggregate(Avg('rating'))['rating__avg'] or 0.0
+
     def __str__(self):
         return self.name
+
+
+class Review(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    rating = models.PositiveIntegerField(choices=[(i, str(i)) for i in range(1, 6)])
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
 
 
 class Order(models.Model):

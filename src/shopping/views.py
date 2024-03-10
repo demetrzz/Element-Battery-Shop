@@ -1,12 +1,14 @@
 import logging
 
+from django.contrib.auth.decorators import login_required
 from django.http import Http404
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
 
-from .models import Product, OrderItem
+from .models import Product, OrderItem, Review
 from .services.cart_services import process_cart
-from .services.order_services import get_order_details
+from .services.order_services import get_order_details, get_product
+from .services.review_services import add_review, get_reviews_by_product, get_review_by_user
 
 logger = logging.getLogger(__name__)
 
@@ -38,6 +40,25 @@ def render_cart_div(request):
     orderitems, total_order_price = get_order_details(request)
     return render(request, 'actual_cart.html',
                   {'orderitems': orderitems, 'total_order_price': total_order_price})
+
+
+def display_reviews(request, id):
+    """ This view renders reviews for the product"""
+    product, reviews = get_reviews_by_product(id)
+    return render(request, 'display_reviews.html', {'product': product, 'reviews': reviews})
+
+
+@login_required
+def leave_review(request, id):
+    """ This view renders page with rating choice and form to leave a review """
+    product, existing_review = get_review_by_user(request, id)
+    return render(request, 'leave_review.html', {'product': product, 'existing_review': existing_review})
+
+
+@require_http_methods(['POST'])
+def submit_review(request, id):
+    add_review(request, id)
+    return redirect('product_reviews', id=id)
 
 
 @require_http_methods(['POST'])

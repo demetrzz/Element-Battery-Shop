@@ -3,7 +3,10 @@
   {% for item in orderitems %}
     <div class="orderitem">
       <span class="order-counter">{{ forloop.counter }}.</span>
-      <span class="product__name">{{ item.product__name  }}</span>
+      <span class="product__name">{{ item.product.name  }}</span>
+      <a class="product-image block mr-2 hover:text-gray-600">
+        <img src="{{ item.product.image.url }}" width="150" height="150">
+      </a>
         <form class="remove-from-cart-form"
               hx-delete="{% url 'remove_from_cart' item.id %}"
               hx-trigger="submit"
@@ -13,7 +16,7 @@
           <button type="submit" class="remove-from-cart-button">Remove from cart</button>
         </form>
         <form class="add-to-cart-form"
-              hx-post="{% url 'add_product_to_cart_div' item.product__id %}"
+              hx-post="{% url 'add_product_to_cart_div' item.product.id %}"
               hx-trigger="submit"
               hx-target="#cart"
               hx-swap="innerHTML">
@@ -21,7 +24,7 @@
           <button type="submit" class="add-to-cart-button">+</button>
         </form>
         <form class="decrease-product-amount-form"
-              hx-post="{% url 'decrease_product_cart_div' item.product__id %}"
+              hx-post="{% url 'decrease_product_cart_div' item.product.id %}"
               hx-trigger="submit"
               hx-target="#cart"
               hx-swap="innerHTML">

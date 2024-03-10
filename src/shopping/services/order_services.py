@@ -66,7 +66,7 @@ def get_order_details(request):
         order = get_object_or_404(Order.objects.filter(status=Order.CREATED), session_key=order_key)
 
     # Getting the order details
-    orderitems = order.items.select_related('product').values('id', 'product__id', 'product__name', 'product__price',
-                                                              'quantity')
+    orderitems = order.items.select_related('product')
+
     total_order_price = order.get_total()
     return orderitems, total_order_price
