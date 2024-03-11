@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>Customer Orders</h2>
+  {% for order in orders %}
+    <div class="order">
+      <h3>Order ID: {{ order.id }}</h3>
+      <p>Status: {{ order.get_status_display }}</p>
+      <p>Total: {{ order.get_total }}</p>
+      <h4>Products:</h4>
+      <ul>
+        {% for item in order.items.all %}
+          <li>
+            Name: {{ item.product.name }}<br>
+            Price: {{ item.product.price }}<br>
+            Quantity: {{ item.quantity }}<br>
+            Subtotal: {{ item.get_cost }}
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% empty %}
+    <p>No orders found.</p>
+  {% endfor %}
+{% endblock %}

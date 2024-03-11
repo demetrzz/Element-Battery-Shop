@@ -70,3 +70,13 @@ def get_order_details(request):
 
     total_order_price = order.get_total()
     return orderitems, total_order_price
+
+
+def get_orders_by_user(request):
+    """ Get or create order """
+    if request.user.is_authenticated:
+        orders = Order.objects.filter(user=request.user)
+    else:
+        order_key = request.session.session_key
+        orders = Order.objects.filter(session_key=order_key)
+    return orders
